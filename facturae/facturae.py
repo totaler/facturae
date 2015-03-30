@@ -1,0 +1,899 @@
+# -*- coding: utf-8 -*-
+
+
+class FacturaeRoot(XmlModel):
+    _sort_order = ('root', 'FileHeader', 'Parties', 'Invoices')
+
+    xmlns = "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02"
+    xsi = "http://www.w3.org/2001/XMLSchema-instance"
+
+    def __init__(self):
+
+        self.root = XmlField('fe:Facturae')
+        self.fileheader = FileHeader()
+        self.parties = Parties()
+        self.invoices = Invoices()
+        super(FacturaeRoot, self).__init__('fe:Facturae', 'root')
+
+# 1
+
+
+class FileHeader(XmlModel):
+
+    _sort_order = ('root', 'schemaversion', 'modality',
+                   'invoiceissuertype', 'batch')
+
+    def __init__(self):
+        self.root = XmlField('FileHeader')
+        self.schemaversion = XmlField('SchemaVersion')
+        self.modality = XmlField('Modality')
+        self.invoiceissuertype = XmlField('InvoiceIssuerType')
+        self.batch = Batch()
+        super(FileHeader, self).__init__('FileHeader', 'root')
+
+# 1.5
+
+
+class Batch(XmlModel):
+
+    _sort_order = ('batch', 'batchidentifier', 'invoicescount'
+                   'totalinvoicesamount', 'totaloutstandingamount',
+                   'totalexecutableamount', 'invoicecurrencycode')
+
+    def __init__(self):
+        self.batch = XmlField('Batch')
+        self.batchidentifier = XmlField('BatchIdentifier')
+        self.invoicescount = XmlfField('InvoicesCount')
+        self.totalinvoicesamount = TotalInvoicesAmount()
+        self.totaloutstandingamount = TotalOutstandingAmount()
+        self.totalexecutableamount = TotalExecutableAmount()
+        self.invoicecurrencycode = XmlfField('InvoiceCurrencyCode')
+        super(Batch, self).__init__('Batch', 'batch')
+
+# 1.5.3
+
+
+class TotalInvoicesAmount(XmlModel):
+
+    _sort_order = ('totalinvoicesamount', 'totalamount', 'equivalentineuros')
+
+    def __init__(self):
+        self.totalinvoicesamount = XmlField('TotalInvoicesAmount')
+        self.totalamount = XmlField('TotalAmount')
+        self.equivalentineuros = XmlField('EquivalentInEuros')
+        super(Batch, self).__init__('TotalInvoicesAmount',
+                                    'totalinvoicesamount')
+
+# 1.5.4
+
+
+class TotalOutstandingAmount(XmlModel):
+
+    _sort_order = ('totalinvoicesamount', 'totalamount', 'equivalentineuros')
+
+    def __init__(self):
+        self.totaloutstandingamount = XmlField('TotalOutstandingAmount')
+        self.totalamount = XmlField('TotalAmount')
+        self.equivalentineuros = XmlField('EquivalentInEuros')
+        super(Batch, self).__init__('TotalOutstandingAmount',
+                                    'totaloutstandingamount')
+
+# 1.5.5
+
+
+class TotalExecutableAmount(XmlModel):
+
+    _sort_order = ('totalexecutableamount', 'totalamount', 'equivalentineuros')
+
+    def __init__(self):
+        self.totaloutstandingamount = XmlField('TotalExecutableAmount')
+        self.totalamount = XmlField('TotalAmount')
+        self.equivalentineuros = XmlField('EquivalentInEuros')
+        super(Batch, self).__init__('TotalExecutableAmount',
+                                    'totalexecutableamount')
+
+# 2
+
+
+class Parties(XmlModel):
+
+    _sort_order = ('parties', 'sellerparty', 'buyerparty')
+
+    def __init__(self):
+        self.parties = XmlField('Parties')
+        self.sellerparty = SellerParty()
+        self.buyerparty = BullerParty()
+        super(Parties, sefl).__init__('Parties', 'parties')
+
+# 2.1
+
+
+class SellerParty(XmlModel):
+
+    _sort_order = ('sellerparty', 'taxidentification', 'legalentity')
+
+    def __init__(self):
+        self.sellerparty = XmlField('SellerParty')
+        self.taxidentification = TaxIdentification()
+        self.legalentity = LegalEntity()
+        super(SellerParty, self).__init__('SellerParty', 'sellerparty')
+
+# 2.1.1
+
+
+class TextIdentification(XmlModel):
+
+    _sort_order = ('taxidentification', 'persontypecode',
+                   'residencetypecode', 'taxidentificationnumber')
+
+    def __init__(self):
+        self.taxidentification = XmlField('TaxIdentification')
+        self.persontypecode = XmlField('PersonTypeCode')
+        self.residencetypecode = XmlField('ResidenceTypeCode')
+        self.taxidentificationnumber = XmlField('TaxIdentificationNumber')
+        super(TextIdentification, self).__init__('TaxIdentification',
+                                                 'taxidentification')
+
+# 2.1.4.1
+
+
+class LegalEntity(XmlModel):
+
+    _sort_order = ('legalentity', 'corporatename',
+                   'tradename', 'addressinspain')
+
+    def __init__(self):
+        self.legalentity = XmlField('LegalEntity')
+        self.corporatename = XmlField('CorporateName')
+        self.tradename = XmlField('TradeName')
+        self.addressinspain = AddressInSpain()
+        self.contactdetails = ContactDetails()
+        super(LegalEntity, self).__init__('LegalEntity',
+                                          'legalentity')
+
+# 2.1.4.1.4.1
+
+
+class AddressInSpain(XmlModel):
+
+    _sort_order = ('addressinspain', 'address', 'postcode',
+                   'town', 'province', 'countrycode')
+
+    def __init__(self):
+        self.addressinspain = XmlField('AddressInSpain')
+        self.address = XmlField('Address')
+        self.postcode = XmlField('PostCode')
+        self.town = XmlField('Town')
+        self.province = XmlField('Province')
+        self.countrycode = XmlField('CountryCode')
+        super(AddressInSpain, self).__init__('AddressInSpain',
+                                             'addressinspain')
+
+# 2.1.4.1.5
+
+
+class ContactDetails(XmlModel):
+
+    _sort_order = ('contactdetails', 'telephone', 'telefax', 'webaddress',
+                   'electronicmail', 'contactpersons', 'cnocnae',
+                   'inetowncode', 'additionalcontactdetails')
+
+    def __init__(self):
+        self.contactdetails = XmlField('ContactDetails')
+        self.telephone = XmlField('Telephone')
+        self.telefax = XmlField('TeleFax')
+        self.webaddress = XmlField('WebAddress')
+        self.electronicmail = XmlField('ElectronicMail')
+        self.contactpersons = XmlField('ContactPersons')
+        self.cnocnae = XmlField('CnoCnae')
+        self.inetowncode = XmlField('INETownCode')
+        self.additionalcontactdetails = XmlField('AdditionalContactDetails')
+        super(ContactDetails, self).__init__('ContactDetails',
+                                             'contactdetails')
+
+# 2.2
+
+
+class BuyerParty(XmlModel):
+
+    _sort_order = ('buyerparty', 'taxidentification', 'legalentity')
+
+    def __init__(self):
+        self.sellerparty = XmlField('SellerParty')
+        self.taxidentification = TaxIdentification()
+        self.administrativecentres = AdministrativeCentres()
+        self.legalentity = LegalEntity()
+        super(SellerParty, self).__init__('SellerParty', 'sellerparty')
+
+# 2.2.3
+
+
+class AdministrativeCentres(XmlModel):
+
+    _sort_order = ('administrativecentres', 'administrativecenter')
+
+    def __init__(self):
+        self.administrativecentres = XmlField('AdministrativeCentres')
+        self.administrativecentre = []  # List of AdministrativeCentre
+        super(AdministrativeCentres, self).__init__('AdministrativeCentres',
+                                                    'administrativecentres')
+
+# 2.2.3.1
+
+
+class AdministrativeCentre(XmlModel):
+
+    _sort_order = ('administrativecentre', 'centrecode', 'roletypecode',
+                   'name', 'firstsurname', 'secondsurname', 'addressinspain',
+                   'contactdetails', 'centredescription')
+
+    def __init__(self):
+        self.administrativecentre = XmlField('AdministrativeCentre')
+        self.centrecode = XmlField('CentreCode')
+        self.roletypecode = XmlField('RoleTypeCode')
+        self.name = XmlField('Name')
+        self.firstsurname = XmlField('FirstSurname')
+        self.secondsurname = XmlField('SecondSurname')
+        self.addressinspain = AddressInSpain()
+        self.contactdetails = ContactDetails()
+        self.centredescription = XmlField('CentreDescription')
+        super(AdministrativeCentre, self).__init__('AdministrativeCentre',
+                                                   'administrativecentre')
+
+# 3
+
+
+class Invoices(XmlModel):
+
+    _sort_order = ('invoices', 'invoice')
+
+    def __init__(self):
+        self.invoices = XmlField('Invoices')
+        self.invoice = []
+        super(Invoices, self).__init__('Invoices', 'invoices')
+
+# 3.1
+
+
+class Invoice(XmlModel):
+
+    _sort_order = ('invoice', 'invoiceheader', 'invoiceissuedata',
+                   'taxesoutputs', 'taxeswithhelds', 'invoicetotals',
+                   'items', 'paymentdetails', 'legalliterals')
+
+    def __init__(self):
+        self.invoice = XmlField('Invoice')
+        self.invoiceheader = InvoiceHeader()
+        self.invoiceissuedata = InvoiceIssueData()
+        self.taxesoutputs = Taxes('TaxesOutputs')
+        self.taxeswithhelds = Taxes('TaxesWithhelds')
+        self.invoicetotals = InvoiceTotals()
+        self.items = Items()
+        self.paymentdetails = PaymentDetails()
+        self.legalliterals = LegalLiterals()
+        self.additionaldata = AdditionalData()
+        super(Invoice, self).__init__('Invoice', 'invoice')
+
+# 3.1.1
+
+
+class InvoiceHeader(XmlModel):
+
+    _sort_order = ('invoice_header', 'invoicenumber', 'invoiceseriescode',
+                   'invoicedocumenttype', 'invoiceclass', 'corrective')
+
+    def __init__(self):
+        self.invoiceheader = XmlField('InvoiceHeader')
+        self.invoicenumber = XmlField('InvoiceNumber')
+        self.invoiceseriescode = XmlField('InvoiceSeriesCode')
+        self.invoicedocumenttype = XmlField('InvoiceDocumentType')
+        self.invoiceclass = XmlField('InvoiceClass')
+        self.corrective = Corrective()
+        super(Invoice, self).__init__('InvoiceHeader', 'invoiceheader')
+
+# 3.1.1.5
+
+
+class Corrective(XmlModel):
+
+    _sort_order = ('corrective', 'invoicenumber', 'invoiceseriescode',
+                   'reasoncode', 'reasondescription', 'taxperiod',
+                   'correctionmethod', 'correctionmethoddescription',
+                   'additionalreasondescription')
+
+    def __init__(self):
+        self.corrective = XmlField('Corrective')
+        self.invoicenumber = XmlField('InvoiceNumber')
+        self.invoiceseriescode = XmlField('InvoiceSeriesCode')
+        self.reasoncode = XmlField('ReasonCode')
+        self.reasondescription = XmlField('ReasonDescription')
+        self.taxperiod = TaxPeriod()
+        self.correctionmethod = XmlField('CorrectionMethod')
+        self.correctionmethoddescription = XmlField(
+                                            'CorrectionMethodDescription')
+        self.additionalreasondescription = XmlField(
+                                            'AdditionalReasonDescription')
+        super(Corrective, self).__init__('Corrective', 'corrective')
+
+# 3.1.1.5.5
+
+
+class TaxPeriod(XmlModel):
+
+    _sort_order = ()
+
+    def __init__(self):
+        self.taxperiod = XmlField('TaxPeriod')
+        self.startdate = XmlField('StartDate')
+        self.enddate = XmlField('EndDate')
+        super(TaxPeriod, self).__init__('TaxPeriod', 'taxperiod')
+
+# 3.1.2
+
+
+class InvoiceIssueData(XmlModel):
+
+    _sort_order = ('invoiceissuedata', 'issuedate', 'operationdate',
+                   'placeofissue', 'invoicingperiod', 'invoicecurrencycode',
+                   'exchangeratedetails', 'taxcurrencycode', 'languagename')
+
+    def __init__(self):
+        self.invoiceissuedata = XmlField('InvoiceIssueData')
+        self.issuedate = XmlField('IssueDate')
+        self.operationdate = XmlField('OperationDate')
+        self.placeofissue = PlaceOfIssue()
+        self.invoicingperiod = InvoicingPeriod()
+        self.invoicecurrencycode = XmlField('InvoiceCurrencyCode')
+        self.exchangeratedetails = ExchangeRateDetails()
+        self.taxcurrencycode = XmlField('TaxCurrencyCode')
+        self.languagename = XmlField('LanguageName')
+        super(InvoiceIssueData, self).__init__('InvoiceIssueData',
+                                               'invoiceissuedata')
+
+# 3.1.2.3
+
+
+class PlaceOfIssue(XmlModel):
+
+    _sort_order = ('placeofissue', 'postcode', 'placeofissuedescription')
+
+    def __init__(self):
+        self.placeofissue = XmlField('PlaceOfIssue')
+        self.postcode = XmlField('PostCode')
+        self.placeofissuedescription = XmlField('PlaceOfIssueDescription')
+        super(InvoiceIssueData, self).__init__('PlaceOfIssue',
+                                               'placeofissue')
+
+# 3.1.2.4
+
+
+class InvoicingPeriod(XmlModel):
+
+    _sort_order = ('invoicingperiod', 'startdate', 'enddate')
+
+    def __init__(self):
+        self.invoicingperiod = XmlField('InvoicingPeriod')
+        self.startdate = XmlField('StartDate')
+        self.enddate = XmlField('EndDate')
+        super(InvoicingPeriod, self).__init__('InvoicingPeriod',
+                                              'invoicingperiod')
+
+# 3.1.2.6
+
+
+class ExchangeRateDetails(XmlModel):
+
+    _sort_order = ('exchangeratedetails', 'exchangerate', 'exchangeratedate')
+
+    def __init__(self):
+        self.exchangeratedetails = XmlField('ExchangeRateDetails')
+        self.exchangerate = XmlField('ExchangeRate')
+        self.exchangeratedate = XmlField('ExchangeRateDate')
+        super(ExchangeRateDetails, self).__init__('ExchangeRateDetails',
+                                                  'exchangeratedetails')
+
+# 3.1.3
+# 3.1.4
+
+
+class Taxes(XmlModel):
+
+    _sort_order = ('taxes', 'tax')
+
+    def __init__(self, tag):
+        self.taxes = XmlField(tag)
+        self.tax = []
+        super(TaxesOutputs, self).__init__(tag,
+                                           'taxes')
+
+# 3.1.3.1
+
+
+class Tax(XmlModel):
+
+    _sort_order = ('tax', 'taxtypecode', 'taxrate', 'taxablebase',
+                   'taxamount', 'specialtaxablebase', 'specialtaxamount',
+                   'equivalencesurcharge')
+
+    def __init__(self):
+        self.tax = XmlField('Tax')
+        self.taxtypecode = XmlField('TaxTypeCode')
+        self.taxrate = XmlField('TaxRate')
+        self.taxablebase = TaxData('TaxableBase')
+        self.taxamount = TaxData('TaxAmount')
+        self.specialtaxablebase = TaxData('SpecialTaxableBase')
+        self.specialtaxamount = TaxData('SpecialTaxAmount')
+        self.equivalencesurcharge = XmlField('EquivalenceSurcharge')
+        self.equivalencesurchargeamount = TaxData('EquivalenceSurchargeAmount')
+        super(Tax, self).__init__('Tax', 'tax')
+
+# 3.1.3.1.3
+# 3.1.3.1.4
+# 3.1.3.1.5
+# 3.1.3.1.6
+# 3.1.3.1.8
+
+
+class TaxData(XmlModel):
+
+    _sort_order = ('taxdata', 'totalamount', 'equivalentineuros')
+
+    def __init__(self, tag):
+        self.taxdata = XmlField(tag)
+        self.totalamount = XmlField('TotalAmount')
+        self.equivalentineuros = XmlField('EquivalentInEuros')
+        super(TaxableBase, self).__init__(tag, 'taxdata')
+
+# 3.1.5
+
+
+class InvoiceTotals(XmlModel):
+
+    _sort_order = ('invoicetotals', 'totalgrossamount', 'generaldiscounts',
+                   'generalsurcharges', 'totalgeneraldiscounts',
+                   'totalgeneralsurcharges', 'totalgrossamountbeforestaxes',
+                   'totaltaxoutputs', 'totaltaxeswithheld', 'invoictotal',
+                   'subsidies', 'totalfinancialexpenses',
+                   'totaloutstandingamount', 'totalpaymentsonaccount',
+                   'amountswithheld', 'totalexecutableamount',
+                   'totalreinbursableexpenses')
+
+    def __init__(self):
+        self.invoicetotals = XmlField('InvoiceTotals')
+        self.totalgrossamount = XmlField('TotalGrossAmount')
+        self.generaldiscounts = GeneralDiscounts('GeneralDiscounts')
+        self.generalsurcharges = GeneralSurcharges('GeneralSurcharges')
+        self.totalgeneraldiscounts = XmlField('TotalGeneralDiscounts')
+        self.totalgeneralsurcharges = XmlField('TotalGeneralSurcharges')
+        self.totalgrossamountbeforetaxes = XmlField(
+                                            'TotalGrossAmountBeforeTaxes')
+        self.totaltaxoutputs = XmlField('TotalTaxOutputs')
+        self.totaltaxeswithhelds = XmlField('TotalTaxesWithheld')
+        self.invoicetotal = XmlField('InvoiceTotal')
+        self.subsidies = Subsidies()
+        self.paymentsonaccount = PaymentsOnAccount()
+        self.reinbursableexpenses = ReinbursableExpenses()
+        self.totalfinancialexpenses = XmlField('TotalFinancialExpenses')
+        self.totaloutstandingamount = XmlField('TotalOutstandingAmount')
+        self.totalpaymentsonaccount = XmlField('TotalPaymentsOnAccount')
+        self.amountswithheld = AmountsWithheld()
+        self.totalexecutableamount = XmlField('TotalExecutableAmount')
+        self.totalreinbursableexpenses = XmlField('TotalReinbursableExpenses')
+        super(InvoiceTotals, self).__init__('InvoiceTotals',
+                                            'invoicetotals')
+
+#3.1.5.2
+
+
+class GeneralDiscounts(XmlModel):
+
+    _sort_order = ('generaldiscounts', 'discount')
+
+    def __init__(self, tag):
+        self.generaldiscounts = XmlField(tag)
+        self.discount = []
+        super(GeneralDiscounts, self).__init__(tag,
+                                               'generaldiscounts')
+
+# 3.1.5.2.1
+
+
+class Discount(XmlModel):
+
+    _sort_order = ('discount', 'discountreason',
+                   'discountrate', 'discountamount')
+
+    def __init__(self):
+        self.discount = XmlField('Discount')
+        self.discountreason = XmlField('DiscountReason')
+        self.discountrate = XmlField('DiscountRate')
+        self.discountamount = XmlField('DiscountAmount')
+        super(Discount, self).__init__('Discount', 'discount')
+
+# 3.1.5.3
+
+
+class GeneralSurcharges(XmlModel):
+
+    _sort_order = ('generalsurcharges', 'charge')
+
+    def __init__(self, tag):
+        self.generalsurcharges = XmlField(tag)
+        self.charge = []
+        super(GeneralSurcharges, self).__init__(tag,
+                                                'generalsurcharges')
+
+# 3.1.5.3.1
+
+
+class Charge(XmlModel):
+
+    _sort_order = ('charge', 'chargereason', 'chargerate', 'chargeamount')
+
+    def __init__(self):
+        self.charge = XmlField('Charge')
+        self.chargereason = XmlField('ChargeReason')
+        self.chargerate = XmlField('ChargeRate')
+        self.chargeamount = XmlField('ChargeAmount')
+        super(Charge, self).__init__('Charge', 'charge')
+
+# 3.1.5.10
+
+
+class Subsidies(XmlModel):
+
+    _sort_order = ('subsudies', 'subsidy')
+
+    def __init__(self):
+        self.subsidies = XmlField('Subsidies')
+        self.subsidy = []
+        super(Subsidies, self).__init__('Subsidies', 'subsidies')
+
+# 3.1.5.10.1
+
+
+class Subsidy(XmlModel):
+
+    _sort_order = ('subsidy', 'subsidydescription',
+                   'subsidyrate', 'subsidyamount')
+
+    def __init__(self):
+        self.subsidy = XmlField('Subsidy')
+        self.subsidydescription = XmlField('SubsidyDescription')
+        self.subsidyrate = XmlField('SubsidyRate')
+        self.subsidyamount = XmlField('SubsidyAmount')
+        super(Subsidy, self).__init__('Subsidy', 'subsidy')
+
+# 3.1.5.11
+
+
+class PaymentsOnAccount(XmlModel):
+
+    _sort_order = ('paymentsonaccount', 'paymentonaccount')
+
+    def __init__(self):
+        self.paymentsonaccount = XmlField('PaymentsOnAccount')
+        self.paymentonaccount = []
+        super(PaymentsOnAccount, self).__init__('PaymentsOnAccount',
+                                                'paymentsonaccount')
+
+# 3.1.5.11.1
+
+
+class PaymentOnAccount(XmlModel):
+
+    _sort_order = ('paymentonaccount', 'paymentonaccountdate',
+                   'paymentonaccountamount')
+
+    def __init__(self):
+        self.paymentonaccount = XmlField('PaymentOnAccount')
+        self.paymentonaccountdate = XmlField('PaymentOnAccountDate')
+        self.paymentonaccountamount = XmlField('PaymentOnAccountAmount')
+        super(PaymentOnAccount, self).__init__('PaymentOnAccount',
+                                               'paymentonaccount')
+
+# 3.1.5.12
+
+
+class ReinbursableExpenses(XmlModel):
+
+    _sort_order = ('reinbursableexpenses', 'reinbursableexpens')
+
+    def __init__(self):
+        self.reinbursableexpenses = XmlField('ReinbursableExpenses')
+        self.reinbursableexpens = []
+        super(PaymentsOnAccount, self).__init__('ReinbursableExpenses',
+                                                'reinbursableexpenses')
+
+# 3.1.5.12.1
+
+
+class ReinbursableExpens(XmlModel):
+
+    _sort_order = ('reinbursableexpens', 'reinbursableexpensessellerparty',
+                   'reinbursableexpensesbuyerparty', 'issuedate',
+                   'invoicenumber', 'invoiceseriescode',
+                   'reinbursableexpensesamount')
+
+    def __init__(self):
+        self.reinbursableexpens = XmlField('ReinbursableExpenses')
+        self.reinbursableexpensessellerparty = ReinbursableExpensesParty(
+                                            'ReinbursableExpensesSellerParty')
+        self.reinbursableexpensesbuyerparty = ReinbursableExpensesParty(
+                                            'ReinbursableExpensesBuyerParty')
+        self.issuedate = XmlField('IssueDate')
+        self.invoicenumber = XmlField('InvoiceNumber')
+        self.invoiceseriescode = XmlField('InvoiceSeriesCode')
+        self.reinbursableexpensesamount = XmlField(
+                                            'ReinbursableExpensesAmount')
+        super(ReinbursableExpens, self).__init__('ReinbursableExpenses',
+                                                 'reinbursableexpens')
+
+# 3.1.5.12.1.1
+# 3.1.5.12.1.2
+
+
+class ReinbursableExpensesParty(XmlModel):
+
+    _sort_order = ('reinbursableexpensesparty', 'persontypecode',
+                   'residenctypecode', 'taxidentificationnumber')
+
+    def __init__(self, tag):
+        self.reinbursableexpensesparty = XmlField(tag)
+        self.persontypecode = XmlField('PersonTypeCode')
+        self.residencetypecode = XmlField('ResidenceTypeCode')
+        self.taxidentificationnumber = XmlField('TaxIdentificationNumber')
+        super(ReinbursableExpensesParty,
+              self).__init__(tag, 'reinbursableexpensesparty')
+
+# 3.1.5.16
+
+
+class AmountsWithheld(XmlModel):
+
+    _sort_order = ('amountswithheld', 'withholdingreason',
+                   'withholdingrate', 'withholdingamount')
+
+    def __init__(self):
+        self.amountswithheld = XmlField('AmountsWithheld')
+        self.withholdingreason = XmlField('WithholdingReason')
+        self.withholdingrate = XmlField('WithholdingRate')
+        self.withholdingamount = XmlField('WithholdingAmount')
+        super(AmountsWithheld, self).__init__('AmountsWithheld',
+                                              'amountswithheld')
+
+# 3.1.6
+
+
+class Items(XmlModel):
+
+    _sort_order = ()
+
+    def __init__(self):
+        self.items = XmlField('Items')
+        self.invoiceline = []
+        super(Items, self).__init__('Items', 'items')
+
+# 3.1.6.1
+
+
+class InvoiceLine(XmlModel):
+
+    _sort_order = ()
+
+    def __init__(self):
+        self.invoiceline = XmlField('InvoiceLine')
+        self.issuercontractreference = XmlField('IssuerContractReference')
+        self.issuercontractdate = XmlField('IssuerContractDate')
+        self.issuertransactionreference = XmlField(
+                                            'IssuerTransactionReference')
+        self.issuertransactiondate = XmlField('IssuerTransactionDate')
+        self.receivercontractreference = XmlField('ReceiverContractReference')
+        self.receivercontractdate = XmlField('ReceiverContractDate')
+        self.receivertransactionreference = XmlField(
+                                            'ReceiverTransactionReference')
+        self.receivertransactiondate = XmlField('ReceiverTransactionDate')
+        self.filereference = XmlField('FileReference')
+        self.sequencenumber = XmlField('SequenceNumber')
+        self.deliverynotesreference = DeliveryNotesReference()
+        self.itemsdescription = XmlField('ItemDescription')
+        self.quantity = XmlField('Quantity')
+        self.unitofmeasure = XmlField('UnitOfMeasure')
+        self.unitpricewithouttax = XmlField('UnitPriceWithoutTax')
+        self.totalcost = XmlField('TotalCost')
+        self.discountandrebates = GeneralDiscounts('DiscountsAndRebates')
+        self.charges = GeneralSurcharges('Charges')
+        self.grossamount = XmlField('GrossAmount')
+        self.taxeswithheld = Taxes('TaxesWithheld')
+        self.taxesoutputs = Taxes('TaxesOutputs')
+        self.lineitemperiod = LineItemPeriod()
+        self.transactiondate = XmlField('TransactionDate')
+        self.additionallineiteminformation = XmlField(
+                                            'AdditionalLineItemInformation')
+        self.specialtaxableevent = SpecialTaxableEvent()
+        self.articlecode = XmlField('ArticleCode')
+        super(InvoiceLine, self).__init__('InvoiceLine', 'invoiceline')
+
+# 3.1.6.1.12
+
+
+class DeliveryNotesReference(XmlModel):
+
+    _sort_order = ('deliverynotesreference', 'deliverynote')
+
+    def __init__(self):
+        self.deliverynotesreference = XmlField('DeliveryNotesReference')
+        self.deliverynote = []
+        super(DeliveryNotesReference, self).__init__('DeliveryNotesReference',
+                                                     'deliverynotesreference')
+
+# 3.1.6.1.12.1
+
+
+class DeliveryNote(XmlModel):
+
+    _sort_order = ('deliverynote', 'deliverynotenumber',
+                   'deliverynotedate')
+
+    def __init__(self):
+        self.deliverynote = XmlField('DeliveryNote')
+        self.deliverynotenumber = XmlField('DeliveryNoteNumber')
+        self.deliverynotedate = XmlField('DeliveryNoteDate')
+        super(DeliveryNote, self).__init__('DeliveryNote',
+                                           'deliverynote')
+
+# 3.1.6.1.23
+
+
+class LineItemPeriod(XmlModel):
+
+    _sort_order = ('lineitemperiod', 'startdate', 'enddate')
+
+    def __init__(self):
+        self.lineitemperiod = XmlField('LineItemPeriod')
+        self.startdate = XmlField('StartDate')
+        self.enddate = XmlField('EndDate')
+        super(LineItemPeriod, self).__init__('LineItemPeriod',
+                                             'lineitemperiod')
+
+# 3.1.6.1.26
+
+
+class SpecialTaxableEvent(XmlModel):
+
+    _sort_order = ('specialtaxableevent', 'specialtaxableeventcode',
+                   'specialtaxableevenreason')
+
+    def __init__(self):
+        self.specialtaxableevent = XmlField('SpecialTaxableEvent')
+        self.specialtaxableeventcode = XmlField('SpecialTaxableEventCode')
+        self.specialtaxableevenreason = XmlField('SpecialTaxableEventReason')
+        super(SpecialTaxableEvent, self).__init__('SpecialTaxableEvent',
+                                                  'specialtaxableevent')
+
+# 3.1.7
+
+
+class PaymentDetails(XmlModel):
+
+    _sort_order = ('paymentdetails', 'installment')
+
+    def __init__(self):
+        self.paymentdetails = XmlField('PaymentDetails')
+        self.installment = []
+        super(PaymentDetails, self).super('PaymentDetails', 'paymentdetails')
+
+# 3.1.7.1
+
+
+class Installment(XmlModel):
+
+    _sort_order = ('installment', 'installmentduedate', 'installmentamount',
+                   'paymentmeans', 'accountobecredited',
+                   'paymentreconciliationreference', 'accounttobedebited',
+                   'collectionadditionalinformation',
+                   'regulatoryreportingdata', 'debitreconciliationreference')
+
+    def __init__(self):
+        self.installment = XmlField('Installment')
+        self.installmentduedate = XmlField('InstallmentDueDate')
+        self.installmentamount = XmlField('InstallmentAmount')
+        self.paymentmeans = XmlField('PaymentMeans')
+        self.accountobecredited = Account('AccountToBeCredited')
+        self.paymentreconciliationreference = XmlField(
+                                            'PaymentReconciliationReference')
+        self.accounttobedebited = Account('AccountToBeDebited')
+        self.collectionadditionalinformation = XmlField(
+                                            'CollectionAdditionalInformation')
+        self.regulatoryreportingdata = XmlField('RegulatoryReportingData')
+        self.debitreconciliationreference = XmlField(
+                                            'DebitReconciliationReference')
+        super(Installment, self).super('Installment', 'installment')
+
+# 3.1.7.1.4
+
+
+class Account(XmlModel):
+
+    _sort_order = ('account', 'iban', 'bankcode', 'branchcode', 'bic')
+
+    def __init__(self, tag):
+        self.account = XmlField(tag)
+        self.iban = XmlField('IBAN')
+        self.bankcode = XmlField('BankCode')
+        self.branchcode = XmlField('BranchCode')
+        self.bic = XmlField('BIC')
+        super(Account, self).super(tag, 'account')
+
+# 3.1.8
+
+
+class LegalLiterals(XmlModel):
+
+    _sort_order = ('legalliterals', 'legalreference')
+
+    def __init__(self):
+        self.legalliterals = XmlField('LegalLiterals')
+        self.legalreference = []
+        super(LegalLiterals, self).__init__('LegalLiterals',
+                                            'legalliterals')
+
+# 3.1.8.1
+
+
+class LegalReference(XmlModel):
+
+    _sort_order = ('legalreference')
+
+    def __init__(self):
+        self.legalreference = XmlField('LegalReference')
+        super(LegalReference, self).__init__('LegalReference',
+                                             'legalreference')
+
+# 3.1.9
+
+
+class AdditionalData(XmlModel):
+
+    _sort_order = ('additionaldata', 'relatedinvoice', 'relateddocuments')
+
+    def __init__(self):
+        self.additionaldata = XmlField('AdditionalData')
+        self.relatedinvoice = XmlField('RelatedInvoice')
+        self.relateddocuments = RelatedDocuments()
+        super(AdditionalData, self).__init__('AdditionalData',
+                                             'additionaldata')
+
+# 3.1.9.2
+
+
+class RelatedDocuments(XmlModel):
+
+    _sort_order = ('relateddocuments', 'attachment')
+
+    def __init__(self):
+        self.relateddocuments = XmlField('RelatedDocuments')
+        self.attachment = []
+        self.invoiceadditionalinformation = XmlField(
+                                            'InvoiceAdditionalInformation')
+        self.extensions = XmlField('Extensions')
+        super(RelatedDocuments, self).__init__('RelatedDocuments',
+                                               'relateddocuments')
+
+# 3.1.9.2.1
+
+
+class Attachment(XmlModel):
+
+    _sort_order = ()
+
+    def __init__(self):
+        self.attachment = XmlField('Attachment')
+        self.attachmentcompressionalgorithm = XmlField(
+                                            'AttachmentCompressionAlgorithm')
+        self.attachmentformat = XmlField('AttachmentFormat')
+        self.attachmentencoding = XmlField('AttachmentEncoding')
+        self.attachmentdescription = XmlField('AttachmentDescription')
+        self.attachmentdata = XmlField('AttachmentData')
+        super(Attachment, self).__init__('Attachment',
+                                         'attachment')
