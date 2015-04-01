@@ -44,53 +44,29 @@ class Batch(XmlModel):
         self.batch = XmlField('Batch')
         self.batchidentifier = XmlField('BatchIdentifier')
         self.invoicescount = XmlfField('InvoicesCount')
-        self.totalinvoicesamount = TotalInvoicesAmount()
-        self.totaloutstandingamount = TotalOutstandingAmount()
-        self.totalexecutableamount = TotalExecutableAmount()
+        self.totalinvoicesamount = Totals('TotalInvoicesAmount')
+        self.totaloutstandingamount = Totals('TotalOutstandingAmount')
+        self.totalexecutableamount = Totals('TotalExecutableAmount')
         self.invoicecurrencycode = XmlfField('InvoiceCurrencyCode')
         super(Batch, self).__init__('Batch', 'batch')
 
 # 1.5.3
-
-
-class TotalInvoicesAmount(XmlModel):
-
-    _sort_order = ('totalinvoicesamount', 'totalamount', 'equivalentineuros')
-
-    def __init__(self):
-        self.totalinvoicesamount = XmlField('TotalInvoicesAmount')
-        self.totalamount = XmlField('TotalAmount')
-        self.equivalentineuros = XmlField('EquivalentInEuros')
-        super(Batch, self).__init__('TotalInvoicesAmount',
-                                    'totalinvoicesamount')
-
 # 1.5.4
-
-
-class TotalOutstandingAmount(XmlModel):
-
-    _sort_order = ('totalinvoicesamount', 'totalamount', 'equivalentineuros')
-
-    def __init__(self):
-        self.totaloutstandingamount = XmlField('TotalOutstandingAmount')
-        self.totalamount = XmlField('TotalAmount')
-        self.equivalentineuros = XmlField('EquivalentInEuros')
-        super(Batch, self).__init__('TotalOutstandingAmount',
-                                    'totaloutstandingamount')
-
 # 1.5.5
 
 
-class TotalExecutableAmount(XmlModel):
+class Totals(XmlModel):
 
-    _sort_order = ('totalexecutableamount', 'totalamount', 'equivalentineuros')
+    _sort_order = ('total', 'totalamount', 'equivalentineuros')
 
-    def __init__(self):
-        self.totaloutstandingamount = XmlField('TotalExecutableAmount')
-        self.totalamount = XmlField('TotalAmount')
-        self.equivalentineuros = XmlField('EquivalentInEuros')
-        super(Batch, self).__init__('TotalExecutableAmount',
-                                    'totalexecutableamount')
+    def __init__(self, tag):
+        self.total = XmlField(tag)
+        self.totalamount = XmlField('TotalAmount',
+                                    rep=lambda x: '%.2f' % x)
+        self.equivalentineuros = XmlField('EquivalentInEuros',
+                                          rep=lambda x: '%.2f' % x)
+        super(Batch, self).__init__(tag,
+                                    'total')
 
 # 2
 
@@ -101,22 +77,24 @@ class Parties(XmlModel):
 
     def __init__(self):
         self.parties = XmlField('Parties')
-        self.sellerparty = SellerParty()
-        self.buyerparty = BullerParty()
+        self.sellerparty = Party('SellerParty')
+        self.buyerparty = Party('BuyerParty')
         super(Parties, sefl).__init__('Parties', 'parties')
 
 # 2.1
+# 2.2
 
 
-class SellerParty(XmlModel):
+class Party(XmlModel):
 
-    _sort_order = ('sellerparty', 'taxidentification', 'legalentity')
+    _sort_order = ('party', 'taxidentification', 'legalentity')
 
-    def __init__(self):
-        self.sellerparty = XmlField('SellerParty')
+    def __init__(self, tag):
+        self.party = XmlField(tag)
         self.taxidentification = TaxIdentification()
+        self.administrativecentres = AdministrativeCentres()
         self.legalentity = LegalEntity()
-        super(SellerParty, self).__init__('SellerParty', 'sellerparty')
+        super(SellerParty, self).__init__(tag, 'sellerparty')
 
 # 2.1.1
 
@@ -161,10 +139,10 @@ class AddressInSpain(XmlModel):
 
     def __init__(self):
         self.addressinspain = XmlField('AddressInSpain')
-        self.address = XmlField('Address')
+        self.address = XmlField('Address', rep=lambda x: x[:80])
         self.postcode = XmlField('PostCode')
-        self.town = XmlField('Town')
-        self.province = XmlField('Province')
+        self.town = XmlField('Town', rep=lambda x: x[:50])
+        self.province = XmlField('Province', rep=lambda x: x[:20])
         self.countrycode = XmlField('CountryCode')
         super(AddressInSpain, self).__init__('AddressInSpain',
                                              'addressinspain')
@@ -183,27 +161,13 @@ class ContactDetails(XmlModel):
         self.telephone = XmlField('Telephone')
         self.telefax = XmlField('TeleFax')
         self.webaddress = XmlField('WebAddress')
-        self.electronicmail = XmlField('ElectronicMail')
+        self.electronicmail = XmlField('ElectronicMail', rep=lambda x: x[:60])
         self.contactpersons = XmlField('ContactPersons')
         self.cnocnae = XmlField('CnoCnae')
         self.inetowncode = XmlField('INETownCode')
         self.additionalcontactdetails = XmlField('AdditionalContactDetails')
         super(ContactDetails, self).__init__('ContactDetails',
                                              'contactdetails')
-
-# 2.2
-
-
-class BuyerParty(XmlModel):
-
-    _sort_order = ('buyerparty', 'taxidentification', 'legalentity')
-
-    def __init__(self):
-        self.sellerparty = XmlField('SellerParty')
-        self.taxidentification = TaxIdentification()
-        self.administrativecentres = AdministrativeCentres()
-        self.legalentity = LegalEntity()
-        super(SellerParty, self).__init__('SellerParty', 'sellerparty')
 
 # 2.2.3
 
@@ -460,24 +424,31 @@ class InvoiceTotals(XmlModel):
 
     def __init__(self):
         self.invoicetotals = XmlField('InvoiceTotals')
-        self.totalgrossamount = XmlField('TotalGrossAmount')
+        self.totalgrossamount = XmlField('TotalGrossAmount',
+                                         rep=lambda x: '%.2f' % x)
         self.generaldiscounts = GeneralDiscounts('GeneralDiscounts')
-        self.generalsurcharges = GeneralSurcharges('GeneralSurcharges')
+        self.generalsurcharges = GeneralDiscounts('GeneralSurcharges')
         self.totalgeneraldiscounts = XmlField('TotalGeneralDiscounts')
         self.totalgeneralsurcharges = XmlField('TotalGeneralSurcharges')
         self.totalgrossamountbeforetaxes = XmlField(
-                                            'TotalGrossAmountBeforeTaxes')
-        self.totaltaxoutputs = XmlField('TotalTaxOutputs')
-        self.totaltaxeswithhelds = XmlField('TotalTaxesWithheld')
-        self.invoicetotal = XmlField('InvoiceTotal')
+                                            'TotalGrossAmountBeforeTaxes',
+                                            rep=lambda x: '%.2f' % x)
+        self.totaltaxoutputs = XmlField('TotalTaxOutputs',
+                                        rep=lambda x: '%.2f' % x)
+        self.totaltaxeswithhelds = XmlField('TotalTaxesWithheld',
+                                            rep=lambda x: '%.2f' % x)
+        self.invoicetotal = XmlField('InvoiceTotal',
+                                     rep=lambda x: '%.2f' % x)
         self.subsidies = Subsidies()
         self.paymentsonaccount = PaymentsOnAccount()
         self.reinbursableexpenses = ReinbursableExpenses()
         self.totalfinancialexpenses = XmlField('TotalFinancialExpenses')
-        self.totaloutstandingamount = XmlField('TotalOutstandingAmount')
+        self.totaloutstandingamount = XmlField('TotalOutstandingAmount',
+                                               rep=lambda x: '%.2f' % x)
         self.totalpaymentsonaccount = XmlField('TotalPaymentsOnAccount')
         self.amountswithheld = AmountsWithheld()
-        self.totalexecutableamount = XmlField('TotalExecutableAmount')
+        self.totalexecutableamount = XmlField('TotalExecutableAmount',
+                                              rep=lambda x: '%.2f' % x)
         self.totalreinbursableexpenses = XmlField('TotalReinbursableExpenses')
         super(InvoiceTotals, self).__init__('InvoiceTotals',
                                             'invoicetotals')
@@ -679,7 +650,18 @@ class Items(XmlModel):
 
 class InvoiceLine(XmlModel):
 
-    _sort_order = ()
+    _sort_order = ('invoiceline', 'issuercontractreference',
+                   'issuercontractdate', 'issuertransactionreference',
+                   'issuertransactiondate', 'receivercontractreference',
+                   'receivercontractdate', 'receivertransactionreference',
+                   'receivertransactiondate', 'filereference',
+                   'sequencenumber', 'deliverynotesreference',
+                   'itemdescription', 'quantity', 'unitofmeasure',
+                   'unitpricewithouttax', 'totalcost',
+                   'discountandrebates', 'charges', 'grossamount',
+                   'taxeswithheld', 'taxesoutputs', 'lineitemperiod',
+                   'transactiondate', 'additionallineiteminformation',
+                   'specialtaxableevent', 'articlecode')
 
     def __init__(self):
         self.invoiceline = XmlField('InvoiceLine')
@@ -696,14 +678,15 @@ class InvoiceLine(XmlModel):
         self.filereference = XmlField('FileReference')
         self.sequencenumber = XmlField('SequenceNumber')
         self.deliverynotesreference = DeliveryNotesReference()
-        self.itemsdescription = XmlField('ItemDescription')
+        self.itemdescription = XmlField('ItemDescription')
         self.quantity = XmlField('Quantity')
         self.unitofmeasure = XmlField('UnitOfMeasure')
-        self.unitpricewithouttax = XmlField('UnitPriceWithoutTax')
-        self.totalcost = XmlField('TotalCost')
+        self.unitpricewithouttax = XmlField('UnitPriceWithoutTax',
+                                            rep=lambda x: '%.8f' % x)
+        self.totalcost = XmlField('TotalCost', rep=lambda x: '%.8f' % x)
         self.discountandrebates = GeneralDiscounts('DiscountsAndRebates')
         self.charges = GeneralSurcharges('Charges')
-        self.grossamount = XmlField('GrossAmount')
+        self.grossamount = XmlField('GrossAmount', rep=lambda x: '%.8f' % x)
         self.taxeswithheld = Taxes('TaxesWithheld')
         self.taxesoutputs = Taxes('TaxesOutputs')
         self.lineitemperiod = LineItemPeriod()
