@@ -12,5 +12,5 @@ setup(
     install_requires=['libComXML'],
     license='GPLv3',
     description='Facturae',
-    long_description=open('README').read(),
+    long_description=open('README.md').read(),
 )

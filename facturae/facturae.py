@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
 
+from libcomxml.core import XmlModel, XmlField
+
 
 class FacturaeRoot(XmlModel):
-    _sort_order = ('root', 'FileHeader', 'Parties', 'Invoices')
-
-    xmlns = "urn:iso:std:iso:20022:tech:xsd:pain.008.001.02"
-    xsi = "http://www.w3.org/2001/XMLSchema-instance"
+    _sort_order = ('root', 'fileheader', 'parties', 'invoices')
 
     def __init__(self):
+        ds = 'http://www.w3.org/2000/09/xmldsig#'
+        fe = 'http://www.facturae.es/Facturae/2014/v3.2.1/Facturae'
 
-        self.root = XmlField('fe:Facturae')
+        self.root = XmlField('Facturae', namespace=fe, nsmap={'ds': ds,
+                                                              'fe': fe})
         self.fileheader = FileHeader()
         self.parties = Parties()
         self.invoices = Invoices()
-        super(FacturaeRoot, self).__init__('fe:Facturae', 'root')
+        super(FacturaeRoot, self).__init__('Facturae', 'root')
 
 # 1
 
@@ -36,18 +38,18 @@ class FileHeader(XmlModel):
 
 class Batch(XmlModel):
 
-    _sort_order = ('batch', 'batchidentifier', 'invoicescount'
+    _sort_order = ('batch', 'batchidentifier', 'invoicescount',
                    'totalinvoicesamount', 'totaloutstandingamount',
                    'totalexecutableamount', 'invoicecurrencycode')
 
     def __init__(self):
         self.batch = XmlField('Batch')
         self.batchidentifier = XmlField('BatchIdentifier')
-        self.invoicescount = XmlfField('InvoicesCount')
+        self.invoicescount = XmlField('InvoicesCount')
         self.totalinvoicesamount = Totals('TotalInvoicesAmount')
         self.totaloutstandingamount = Totals('TotalOutstandingAmount')
         self.totalexecutableamount = Totals('TotalExecutableAmount')
-        self.invoicecurrencycode = XmlfField('InvoiceCurrencyCode')
+        self.invoicecurrencycode = XmlField('InvoiceCurrencyCode')
         super(Batch, self).__init__('Batch', 'batch')
 
 # 1.5.3
@@ -65,8 +67,7 @@ class Totals(XmlModel):
                                     rep=lambda x: '%.2f' % x)
         self.equivalentineuros = XmlField('EquivalentInEuros',
                                           rep=lambda x: '%.2f' % x)
-        super(Batch, self).__init__(tag,
-                                    'total')
+        super(Totals, self).__init__(tag, 'total')
 
 # 2
 
@@ -79,7 +80,7 @@ class Parties(XmlModel):
         self.parties = XmlField('Parties')
         self.sellerparty = Party('SellerParty')
         self.buyerparty = Party('BuyerParty')
-        super(Parties, sefl).__init__('Parties', 'parties')
+        super(Parties, self).__init__('Parties', 'parties')
 
 # 2.1
 # 2.2
@@ -87,19 +88,20 @@ class Parties(XmlModel):
 
 class Party(XmlModel):
 
-    _sort_order = ('party', 'taxidentification', 'legalentity')
+    _sort_order = ('party', 'taxidentification',
+                   'administrativecentres', 'legalentity')
 
     def __init__(self, tag):
         self.party = XmlField(tag)
         self.taxidentification = TaxIdentification()
         self.administrativecentres = AdministrativeCentres()
         self.legalentity = LegalEntity()
-        super(SellerParty, self).__init__(tag, 'sellerparty')
+        super(Party, self).__init__(tag, 'party')
 
 # 2.1.1
 
 
-class TextIdentification(XmlModel):
+class TaxIdentification(XmlModel):
 
     _sort_order = ('taxidentification', 'persontypecode',
                    'residencetypecode', 'taxidentificationnumber')
@@ -109,8 +111,8 @@ class TextIdentification(XmlModel):
         self.persontypecode = XmlField('PersonTypeCode')
         self.residencetypecode = XmlField('ResidenceTypeCode')
         self.taxidentificationnumber = XmlField('TaxIdentificationNumber')
-        super(TextIdentification, self).__init__('TaxIdentification',
-                                                 'taxidentification')
+        super(TaxIdentification, self).__init__('TaxIdentification',
+                                                'taxidentification')
 
 # 2.1.4.1
 
@@ -174,7 +176,7 @@ class ContactDetails(XmlModel):
 
 class AdministrativeCentres(XmlModel):
 
-    _sort_order = ('administrativecentres', 'administrativecenter')
+    _sort_order = ('administrativecentres', 'administrativecentre')
 
     def __init__(self):
         self.administrativecentres = XmlField('AdministrativeCentres')
@@ -253,7 +255,7 @@ class InvoiceHeader(XmlModel):
         self.invoicedocumenttype = XmlField('InvoiceDocumentType')
         self.invoiceclass = XmlField('InvoiceClass')
         self.corrective = Corrective()
-        super(Invoice, self).__init__('InvoiceHeader', 'invoiceheader')
+        super(InvoiceHeader, self).__init__('InvoiceHeader', 'invoiceheader')
 
 # 3.1.1.5
 
@@ -325,8 +327,8 @@ class PlaceOfIssue(XmlModel):
         self.placeofissue = XmlField('PlaceOfIssue')
         self.postcode = XmlField('PostCode')
         self.placeofissuedescription = XmlField('PlaceOfIssueDescription')
-        super(InvoiceIssueData, self).__init__('PlaceOfIssue',
-                                               'placeofissue')
+        super(PlaceOfIssue, self).__init__('PlaceOfIssue',
+                                           'placeofissue')
 
 # 3.1.2.4
 
@@ -367,8 +369,7 @@ class Taxes(XmlModel):
     def __init__(self, tag):
         self.taxes = XmlField(tag)
         self.tax = []
-        super(TaxesOutputs, self).__init__(tag,
-                                           'taxes')
+        super(Taxes, self).__init__(tag, 'taxes')
 
 # 3.1.3.1
 
@@ -377,7 +378,7 @@ class Tax(XmlModel):
 
     _sort_order = ('tax', 'taxtypecode', 'taxrate', 'taxablebase',
                    'taxamount', 'specialtaxablebase', 'specialtaxamount',
-                   'equivalencesurcharge')
+                   'equivalencesurcharge', 'equivalencesurchargeamount')
 
     def __init__(self):
         self.tax = XmlField('Tax')
@@ -406,7 +407,7 @@ class TaxData(XmlModel):
         self.taxdata = XmlField(tag)
         self.totalamount = XmlField('TotalAmount')
         self.equivalentineuros = XmlField('EquivalentInEuros')
-        super(TaxableBase, self).__init__(tag, 'taxdata')
+        super(TaxData, self).__init__(tag, 'taxdata')
 
 # 3.1.5
 
@@ -415,8 +416,8 @@ class InvoiceTotals(XmlModel):
 
     _sort_order = ('invoicetotals', 'totalgrossamount', 'generaldiscounts',
                    'generalsurcharges', 'totalgeneraldiscounts',
-                   'totalgeneralsurcharges', 'totalgrossamountbeforestaxes',
-                   'totaltaxoutputs', 'totaltaxeswithheld', 'invoictotal',
+                   'totalgeneralsurcharges', 'totalgrossamountbeforetaxes',
+                   'totaltaxoutputs', 'totaltaxeswithheld', 'invoicetotal',
                    'subsidies', 'totalfinancialexpenses',
                    'totaloutstandingamount', 'totalpaymentsonaccount',
                    'amountswithheld', 'totalexecutableamount',
@@ -435,7 +436,7 @@ class InvoiceTotals(XmlModel):
                                             rep=lambda x: '%.2f' % x)
         self.totaltaxoutputs = XmlField('TotalTaxOutputs',
                                         rep=lambda x: '%.2f' % x)
-        self.totaltaxeswithhelds = XmlField('TotalTaxesWithheld',
+        self.totaltaxeswithheld = XmlField('TotalTaxesWithheld',
                                             rep=lambda x: '%.2f' % x)
         self.invoicetotal = XmlField('InvoiceTotal',
                                      rep=lambda x: '%.2f' % x)
@@ -573,8 +574,8 @@ class ReinbursableExpenses(XmlModel):
     def __init__(self):
         self.reinbursableexpenses = XmlField('ReinbursableExpenses')
         self.reinbursableexpens = []
-        super(PaymentsOnAccount, self).__init__('ReinbursableExpenses',
-                                                'reinbursableexpenses')
+        super(ReinbursableExpenses, self).__init__('ReinbursableExpenses',
+                                                   'reinbursableexpenses')
 
 # 3.1.5.12.1
 
@@ -764,7 +765,8 @@ class PaymentDetails(XmlModel):
     def __init__(self):
         self.paymentdetails = XmlField('PaymentDetails')
         self.installment = []
-        super(PaymentDetails, self).super('PaymentDetails', 'paymentdetails')
+        super(PaymentDetails, self).__init__('PaymentDetails',
+                                             'paymentdetails')
 
 # 3.1.7.1
 
@@ -772,7 +774,7 @@ class PaymentDetails(XmlModel):
 class Installment(XmlModel):
 
     _sort_order = ('installment', 'installmentduedate', 'installmentamount',
-                   'paymentmeans', 'accountobecredited',
+                   'paymentmeans', 'accounttobecredited',
                    'paymentreconciliationreference', 'accounttobedebited',
                    'collectionadditionalinformation',
                    'regulatoryreportingdata', 'debitreconciliationreference')
@@ -782,7 +784,7 @@ class Installment(XmlModel):
         self.installmentduedate = XmlField('InstallmentDueDate')
         self.installmentamount = XmlField('InstallmentAmount')
         self.paymentmeans = XmlField('PaymentMeans')
-        self.accountobecredited = Account('AccountToBeCredited')
+        self.accounttobecredited = Account('AccountToBeCredited')
         self.paymentreconciliationreference = XmlField(
                                             'PaymentReconciliationReference')
         self.accounttobedebited = Account('AccountToBeDebited')
@@ -791,7 +793,7 @@ class Installment(XmlModel):
         self.regulatoryreportingdata = XmlField('RegulatoryReportingData')
         self.debitreconciliationreference = XmlField(
                                             'DebitReconciliationReference')
-        super(Installment, self).super('Installment', 'installment')
+        super(Installment, self).__init__('Installment', 'installment')
 
 # 3.1.7.1.4
 
@@ -806,7 +808,7 @@ class Account(XmlModel):
         self.bankcode = XmlField('BankCode')
         self.branchcode = XmlField('BranchCode')
         self.bic = XmlField('BIC')
-        super(Account, self).super(tag, 'account')
+        super(Account, self).__init__(tag, 'account')
 
 # 3.1.8
 
