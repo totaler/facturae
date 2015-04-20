@@ -7,11 +7,12 @@ class FacturaeRoot(XmlModel):
     _sort_order = ('root', 'fileheader', 'parties', 'invoices')
 
     def __init__(self):
-        ds = 'http://www.w3.org/2000/09/xmldsig#'
-        fe = 'http://www.facturae.es/Facturae/2014/v3.2.1/Facturae'
 
-        self.root = XmlField('Facturae', namespace=fe, nsmap={'ds': ds,
-                                                              'fe': fe})
+        nsmap = {'ds': 'http://www.w3.org/2000/09/xmldsig#',
+                 'fe': 'http://www.facturae.es/Facturae/2014/v3.2.1/Facturae'}
+
+        self.root = XmlField('Facturae', namespace=nsmap['fe'],
+                             attributes={'nsmap': nsmap})
         self.fileheader = FileHeader()
         self.parties = Parties()
         self.invoices = Invoices()
