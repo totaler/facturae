@@ -406,8 +406,9 @@ class TaxData(XmlModel):
 
     def __init__(self, tag):
         self.taxdata = XmlField(tag)
-        self.totalamount = XmlField('TotalAmount')
-        self.equivalentineuros = XmlField('EquivalentInEuros')
+        self.totalamount = XmlField('TotalAmount', rep=lambda x: '%.2f' % x)
+        self.equivalentineuros = XmlField('EquivalentInEuros',
+                                          rep=lambda x: '%.2f' % x)
         super(TaxData, self).__init__(tag, 'taxdata')
 
 # 3.1.5
