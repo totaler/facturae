@@ -843,12 +843,16 @@ class LegalReference(XmlModel):
 
 class AdditionalData(XmlModel):
 
-    _sort_order = ('additionaldata', 'relatedinvoice', 'relateddocuments')
+    _sort_order = ('additionaldata', 'relatedinvoice', 'relateddocuments',
+                   'invoiceadditionalinformation', 'extensions')
 
     def __init__(self):
         self.additionaldata = XmlField('AdditionalData')
         self.relatedinvoice = XmlField('RelatedInvoice')
         self.relateddocuments = RelatedDocuments()
+        self.invoiceadditionalinformation = XmlField(
+                                            'InvoiceAdditionalInformation')
+        self.extensions = XmlField('Extensions')
         super(AdditionalData, self).__init__('AdditionalData',
                                              'additionaldata')
 
@@ -862,9 +866,6 @@ class RelatedDocuments(XmlModel):
     def __init__(self):
         self.relateddocuments = XmlField('RelatedDocuments')
         self.attachment = []
-        self.invoiceadditionalinformation = XmlField(
-                                            'InvoiceAdditionalInformation')
-        self.extensions = XmlField('Extensions')
         super(RelatedDocuments, self).__init__('RelatedDocuments',
                                                'relateddocuments')
 
