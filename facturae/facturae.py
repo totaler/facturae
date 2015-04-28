@@ -384,7 +384,7 @@ class Tax(XmlModel):
     def __init__(self):
         self.tax = XmlField('Tax')
         self.taxtypecode = XmlField('TaxTypeCode')
-        self.taxrate = XmlField('TaxRate')
+        self.taxrate = XmlField('TaxRate', rep=lambda x: '%.8f' % x)
         self.taxablebase = TaxData('TaxableBase')
         self.taxamount = TaxData('TaxAmount')
         self.specialtaxablebase = TaxData('SpecialTaxableBase')
@@ -784,7 +784,8 @@ class Installment(XmlModel):
     def __init__(self):
         self.installment = XmlField('Installment')
         self.installmentduedate = XmlField('InstallmentDueDate')
-        self.installmentamount = XmlField('InstallmentAmount')
+        self.installmentamount = XmlField('InstallmentAmount',
+                                          rep=lambda x: '%.2f' % x)
         self.paymentmeans = XmlField('PaymentMeans')
         self.accounttobecredited = Account('AccountToBeCredited')
         self.paymentreconciliationreference = XmlField(
