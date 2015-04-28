@@ -226,7 +226,8 @@ class Invoice(XmlModel):
 
     _sort_order = ('invoice', 'invoiceheader', 'invoiceissuedata',
                    'taxesoutputs', 'taxeswithhelds', 'invoicetotals',
-                   'items', 'paymentdetails', 'legalliterals')
+                   'items', 'paymentdetails', 'legalliterals',
+                   'additionaldata')
 
     def __init__(self):
         self.invoice = XmlField('Invoice')
