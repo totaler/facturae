@@ -875,7 +875,9 @@ class RelatedDocuments(XmlModel):
 
 class Attachment(XmlModel):
 
-    _sort_order = ()
+    _sort_order = ('attachment', 'attachmentcompressionalgorithm',
+                   'attachmentformat', 'attachmentencoding',
+                   'attachmentdescription', 'attachmentdata')
 
     def __init__(self):
         self.attachment = XmlField('Attachment')
